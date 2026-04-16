@@ -4,6 +4,10 @@
 
 It defines how AI agents reason, navigate, and perform deterministic edits using anchor buffers.
 
+## Specification
+
+The official specification is available in [SPEC.md](./SPEC.md).
+
 ## Key Features
 
 - Buffer-First Editing

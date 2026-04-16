@@ -31,9 +31,9 @@ LLM → AnchorEdit → AnchorScope → Source Code
 ## Repository Structure
 
 - `SPEC.md` — The official specification
-- `examples/` — Usage examples
-- `docs/` — Design documents
-- `diagrams/` — Architecture diagrams
+- `examples/` — to be appear
+- `docs/` — to be appear
+- `diagrams/` — to be appear
 
 ## Status
 

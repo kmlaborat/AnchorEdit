@@ -15,8 +15,8 @@ The agent decides what to protect by choosing the anchor.
 
 ## Repository Structure
 
-- `SPEC.md` — The official specification (v0.2.0)
-- `SLIDING_BISECTION.md` — Anchor discovery algorithm (informative)
+- `docs/SPEC.md` — The official specification (v0.2.0)
+- `docs/SLIDING_BISECTION.md` — Anchor discovery algorithm (informative)
 
 ## Architecture
 

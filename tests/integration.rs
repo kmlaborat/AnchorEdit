@@ -55,11 +55,10 @@ fn read_no_match() {
     ]);
 
     assert!(!output.status.success());
-    let stdout = String::from_utf8_lossy(&output.stdout);
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(
-        stdout.contains("NO_MATCH") || stderr.contains("NO_MATCH"),
-        "expected NO_MATCH in output, got stdout: {stdout} stderr: {stderr}"
+        stderr.contains("NO_MATCH"),
+        "expected NO_MATCH in stderr, got: {stderr}"
     );
 }
 
@@ -77,11 +76,10 @@ fn read_multiple_matches() {
     ]);
 
     assert!(!output.status.success());
-    let stdout = String::from_utf8_lossy(&output.stdout);
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(
-        stdout.contains("MULTIPLE_MATCHES") || stderr.contains("MULTIPLE_MATCHES"),
-        "expected MULTIPLE_MATCHES in output, got stdout: {stdout} stderr: {stderr}"
+        stderr.contains("MULTIPLE_MATCHES"),
+        "expected MULTIPLE_MATCHES in stderr, got: {stderr}"
     );
 }
 
@@ -146,10 +144,9 @@ fn write_hash_mismatch() {
     ]);
 
     assert!(!output.status.success());
-    let stdout = String::from_utf8_lossy(&output.stdout);
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(
-        stdout.contains("HASH_MISMATCH") || stderr.contains("HASH_MISMATCH"),
-        "expected HASH_MISMATCH in output, got stdout: {stdout} stderr: {stderr}"
+        stderr.contains("HASH_MISMATCH"),
+        "expected HASH_MISMATCH in stderr, got: {stderr}"
     );
 }

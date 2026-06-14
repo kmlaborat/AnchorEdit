@@ -1,6 +1,6 @@
 mod commands;
 
-use clap::{Parser, Subcommand};
+use clap::{ArgGroup, Parser, Subcommand};
 
 /// AnchorEdit - LLM-native code editing via AnchorScope
 #[derive(Parser)]
@@ -13,6 +13,11 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     /// Read content matched by an anchor
+    #[command(groups([
+        ArgGroup::new("anchor_source")
+            .required(true)
+            .args(["anchor", "anchor_file"]),
+    ]))]
     Read {
         /// Path to the target file
         #[arg(long)]
@@ -27,6 +32,14 @@ enum Commands {
         anchor_file: Option<String>,
     },
     /// Write a replacement for the anchored scope
+    #[command(groups([
+        ArgGroup::new("anchor_source")
+            .required(true)
+            .args(["anchor", "anchor_file"]),
+        ArgGroup::new("replacement_source")
+            .required(true)
+            .args(["replacement", "replacement_file"]),
+    ]))]
     Write {
         /// Path to the target file
         #[arg(long)]

@@ -212,7 +212,7 @@ file size. For typical cases (4–5 rounds), this is negligible.
 | `overlap_ratio` | 10% | Overlap width on each side of a segment boundary |
 | `slide_step` | 0.5% | Byte offset increment when searching for unique boundary |
 | `slide_limit` | 10% | Maximum slide range before widening segment |
-| `termination_bytes` | 2000 | Stop bisecting when scope is smaller than this |
+| `termination_bytes` | 512 | Stop bisecting when scope is smaller than this |
 
 These parameters may be tuned based on file characteristics and agent behavior.
 

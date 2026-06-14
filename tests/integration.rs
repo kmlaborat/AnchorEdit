@@ -235,15 +235,13 @@ fn search_termination_bytes_returns_done() {
     let content = "hello world\n".repeat(500);
     let file_path = create_temp_file(dir.path(), "test.txt", &content);
 
-    // Use a very small range that falls below termination_bytes
+    // Use a very small range that falls below default termination_bytes (512)
     let output = run_ae(&[
         "search",
         "--file",
         file_path.to_str().unwrap(),
         "--range",
         "0.49:0.51",
-        "--termination-bytes",
-        "2000",
     ]);
 
     assert!(output.status.success());

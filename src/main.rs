@@ -75,7 +75,7 @@ enum Commands {
         #[arg(long)]
         range: Option<String>,
 
-        /// Termination threshold in bytes (default: 2000)
+        /// Termination threshold in bytes (default: 512)
         #[arg(long)]
         termination_bytes: Option<usize>,
 

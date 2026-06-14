@@ -32,7 +32,7 @@ pub fn run(
     preview_bytes: Option<usize>,
     overlap: Option<f64>,
 ) -> i32 {
-    let termination_bytes = termination_bytes.unwrap_or(2000);
+    let termination_bytes = termination_bytes.unwrap_or(512);
     let preview_bytes = preview_bytes.unwrap_or(256);
     let overlap_ratio = overlap.unwrap_or(0.1);
 

@@ -28,35 +28,25 @@ Source File
 
 - [AnchorScope v2.0.0](https://github.com/kmlaborat/AnchorScope)
 
-### Build
+### Build & Install
 
 ```bash
-cargo build --release
+cargo install --path .
 ```
 
-The binaries are `target/release/anchoredit` and `target/release/ae`.
+### Optional: short alias
+
+Add to your shell profile (`.bashrc`, `.zshrc`, etc.):
+
+```bash
+alias ae=anchoredit
+```
 
 ### Environment
 
 ```bash
 # Optional: specify path to anchorscope binary
 export ANCHORSCOPE_BIN=/path/to/anchorscope
-```
-
-### Usage
-
-Both commands are equivalent:
-
-```bash
-anchoredit search --file <path>
-ae search --file <path>
-```
-
-If `ae` conflicts with another tool in your environment:
-
-```bash
-alias ae=anchoredit
-# or use anchoredit directly
 ```
 
 ## Commands

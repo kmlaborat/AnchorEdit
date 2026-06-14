@@ -1,4 +1,5 @@
 pub mod read;
+pub mod search;
 pub mod write;
 
 use std::io::{BufRead, BufReader};

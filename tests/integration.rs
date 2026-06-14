@@ -22,6 +22,8 @@ fn create_temp_file(dir: &std::path::Path, name: &str, content: &str) -> std::pa
     path
 }
 
+// --- read tests ---
+
 #[test]
 fn read_success() {
     let dir = tempfile::tempdir().expect("failed to create temp dir");
@@ -149,4 +151,130 @@ fn write_hash_mismatch() {
         stderr.contains("HASH_MISMATCH"),
         "expected HASH_MISMATCH in stderr, got: {stderr}"
     );
+}
+
+// --- search tests ---
+
+#[test]
+fn search_initial_returns_segments() {
+    let dir = tempfile::tempdir().expect("failed to create temp dir");
+    // Create a file large enough to not trigger termination
+    let content = "hello world\n".repeat(500);
+    let file_path = create_temp_file(dir.path(), "test.txt", &content);
+
+    let output = run_ae(&[
+        "search",
+        "--file",
+        file_path.to_str().unwrap(),
+    ]);
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let json: serde_json::Value = serde_json::from_str(&stdout).expect("expected valid JSON");
+
+    // Should have segments, not done
+    assert!(!json.get("done").unwrap_or(&serde_json::Value::Bool(false)).as_bool().unwrap());
+    let segments = json.get("segments").expect("expected segments").as_array().unwrap();
+    assert_eq!(segments.len(), 3);
+
+    // Check segment IDs
+    assert_eq!(segments[0]["id"], "A");
+    assert_eq!(segments[1]["id"], "B");
+    assert_eq!(segments[2]["id"], "C");
+}
+
+#[test]
+fn search_with_range_returns_segments() {
+    let dir = tempfile::tempdir().expect("failed to create temp dir");
+    let content = "hello world\n".repeat(500);
+    let file_path = create_temp_file(dir.path(), "test.txt", &content);
+
+    let output = run_ae(&[
+        "search",
+        "--file",
+        file_path.to_str().unwrap(),
+        "--range",
+        "0.3:0.7",
+    ]);
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let json: serde_json::Value = serde_json::from_str(&stdout).expect("expected valid JSON");
+
+    let segments = json.get("segments").expect("expected segments").as_array().unwrap();
+    assert_eq!(segments.len(), 3);
+
+    // Range should be set
+    let range = json.get("range").expect("expected range").as_array().unwrap();
+    assert_eq!(range.len(), 2);
+}
+
+#[test]
+fn search_small_file_returns_done() {
+    let dir = tempfile::tempdir().expect("failed to create temp dir");
+    let file_path = create_temp_file(dir.path(), "test.txt", "small content");
+
+    let output = run_ae(&[
+        "search",
+        "--file",
+        file_path.to_str().unwrap(),
+    ]);
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let json: serde_json::Value = serde_json::from_str(&stdout).expect("expected valid JSON");
+
+    assert!(json.get("done").unwrap().as_bool().unwrap());
+    let anchor = json.get("anchor").unwrap().as_str().unwrap();
+    assert_eq!(anchor, "small content");
+}
+
+#[test]
+fn search_termination_bytes_returns_done() {
+    let dir = tempfile::tempdir().expect("failed to create temp dir");
+    let content = "hello world\n".repeat(500);
+    let file_path = create_temp_file(dir.path(), "test.txt", &content);
+
+    // Use a very small range that falls below termination_bytes
+    let output = run_ae(&[
+        "search",
+        "--file",
+        file_path.to_str().unwrap(),
+        "--range",
+        "0.49:0.51",
+        "--termination-bytes",
+        "2000",
+    ]);
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let json: serde_json::Value = serde_json::from_str(&stdout).expect("expected valid JSON");
+
+    assert!(json.get("done").unwrap().as_bool().unwrap());
+    assert!(json.get("anchor").unwrap().as_str().is_some());
+}
+
+#[test]
+fn search_anchor_is_valid_utf8() {
+    let dir = tempfile::tempdir().expect("failed to create temp dir");
+    // Use UTF-8 content
+    let file_path = create_temp_file(dir.path(), "test.txt", "こんにちは世界");
+
+    let output = run_ae(&[
+        "search",
+        "--file",
+        file_path.to_str().unwrap(),
+    ]);
+
+    assert!(output.status.success());
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let json: serde_json::Value = serde_json::from_str(&stdout).expect("expected valid JSON");
+
+    // Should return done for small file
+    assert!(json.get("done").unwrap().as_bool().unwrap());
+    let anchor = json.get("anchor").unwrap().as_str().unwrap();
+
+    // Anchor should be valid UTF-8
+    assert!(std::str::from_utf8(anchor.as_bytes()).is_ok());
+    assert_eq!(anchor, "こんにちは世界");
 }

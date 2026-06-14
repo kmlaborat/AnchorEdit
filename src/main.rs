@@ -65,6 +65,28 @@ enum Commands {
         #[arg(long)]
         replacement_file: Option<String>,
     },
+    /// Sliding bisection search to narrow a target scope
+    Search {
+        /// Path to the target file
+        #[arg(long)]
+        file: String,
+
+        /// Range as start:end (0.0–1.0 fractions of file size)
+        #[arg(long)]
+        range: Option<String>,
+
+        /// Termination threshold in bytes (default: 2000)
+        #[arg(long)]
+        termination_bytes: Option<usize>,
+
+        /// Preview length in bytes (default: 256)
+        #[arg(long)]
+        preview_bytes: Option<usize>,
+
+        /// Overlap ratio on each side (0.0–1.0, default: 0.1)
+        #[arg(long)]
+        overlap: Option<f64>,
+    },
 }
 
 fn get_anchorscope_bin() -> String {
@@ -97,6 +119,19 @@ fn main() {
                 replacement_file.as_deref(),
             )
         }
+        Commands::Search {
+            file,
+            range,
+            termination_bytes,
+            preview_bytes,
+            overlap,
+        } => commands::search::run(
+            &file,
+            range.as_deref(),
+            termination_bytes,
+            preview_bytes,
+            overlap,
+        ),
     };
 
     std::process::exit(code);

@@ -22,10 +22,6 @@ fn create_temp_file(dir: &std::path::Path, name: &str, content: &str) -> std::pa
     path
 }
 
-fn create_temp_anchor_file(dir: &std::path::Path, name: &str, content: &str) -> std::path::PathBuf {
-    create_temp_file(dir, name, content)
-}
-
 #[test]
 fn read_success() {
     let dir = tempfile::tempdir().expect("failed to create temp dir");

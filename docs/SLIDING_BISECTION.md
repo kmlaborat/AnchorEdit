@@ -89,6 +89,11 @@ Segment C: [60% ──────── 100%]
 Overlap width is 10% on each side (configurable). The overlap ensures that
 a target near a boundary always falls fully within at least one segment.
 
+Each segment is expanded by the overlap width
+before emission. Segments may extend beyond the
+original range boundaries and are clamped to
+file boundaries.
+
 #### Step 2: Agent Selects
 
 Show the agent the three segments and ask:

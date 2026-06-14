@@ -1,6 +1,6 @@
 use super::{build_command, run_command};
 
-/// Run `ae write` by wrapping `as write`.
+/// Run `ae write` by wrapping `anchorscope write`.
 pub fn run(
     file: &str,
     anchor: Option<&str>,

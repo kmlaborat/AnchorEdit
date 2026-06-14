@@ -1,6 +1,6 @@
 use super::{build_command, run_command};
 
-/// Run `ae read` by wrapping `as read`.
+/// Run `ae read` by wrapping `anchorscope read`.
 pub fn run(
     file: &str,
     anchor: Option<&str>,

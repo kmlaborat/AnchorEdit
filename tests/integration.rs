@@ -5,7 +5,7 @@ use std::process::Command;
 const AE_BIN: &str = env!("CARGO_BIN_EXE_anchoredit");
 
 fn anchorscope_bin() -> String {
-    env::var("ANCHORSCOPE_BIN").expect("ANCHORSCOPE_BIN must be set for integration tests")
+    env::var("ANCHORSCOPE_BIN").unwrap_or_else(|_| "anchorscope".to_string())
 }
 
 fn run_ae(args: &[&str]) -> std::process::Output {

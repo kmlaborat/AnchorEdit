@@ -26,7 +26,7 @@ Source File
 
 ### Prerequisites
 
-- [AnchorScope v2.0.0](https://github.com/kmlaborat/AnchorScope)
+- [AnchorScope](https://github.com/kmlaborat/AnchorScope) v2.0.0 or later
 
 ### Build & Install
 

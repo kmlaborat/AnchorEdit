@@ -109,8 +109,41 @@ The selected segment becomes the new scope. Repeat from Step 1.
 #### Step 4: Termination
 
 Stop when the scope is small enough to edit directly (e.g., ≤ 50 lines or
-≤ 2000 bytes). The resulting scope is passed to AnchorScope for
+≤ 512 bytes). The resulting scope is passed to AnchorScope for
 `read` / `write`.
+
+### Response Format
+
+**Normal step** (scope still needs narrowing):
+
+```
+{
+  "range": [0.3, 0.7],
+  "size_bytes": 1909,
+  "segments": [
+    {
+      "id": "A",
+      "range": [0.3, 0.52],
+      "size_bytes": 1823,
+      "preview": "..."
+    },
+    ...
+  ]
+}
+```
+
+**Termination** (scope is small enough):
+
+```
+{
+  "done": true,
+  "size_bytes": 487,
+  "anchor": "..."
+}
+```
+
+`size_bytes` is the byte length of the current range (end_byte - start_byte).
+It is included in both normal and termination responses.
 
 ---
 

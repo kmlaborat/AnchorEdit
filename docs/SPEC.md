@@ -146,6 +146,10 @@ as write \
   file state. This typically indicates a stale or incorrect hash was provided.
 * `MULTIPLE_MATCHES` means the anchor is not unique. The agent MUST widen
   the anchor until it matches exactly once.
+* If the returned anchor appears incomplete
+  (e.g., truncated mid-statement), the agent MAY
+  retry `ae search` with a larger `--termination-bytes`
+  value to obtain a wider anchor.
 
 ---
 

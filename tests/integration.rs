@@ -181,6 +181,10 @@ fn search_initial_returns_segments() {
     assert_eq!(segments[0]["id"], "A");
     assert_eq!(segments[1]["id"], "B");
     assert_eq!(segments[2]["id"], "C");
+
+    // Check size_bytes is present and positive
+    let size_bytes = json.get("size_bytes").expect("expected size_bytes").as_u64().unwrap();
+    assert!(size_bytes > 0, "size_bytes should be positive, got {size_bytes}");
 }
 
 #[test]
@@ -207,6 +211,10 @@ fn search_with_range_returns_segments() {
     // Range should be set
     let range = json.get("range").expect("expected range").as_array().unwrap();
     assert_eq!(range.len(), 2);
+
+    // size_bytes should be ~40% of file size (range 0.3-0.7 = 0.4 of file)
+    let size_bytes = json.get("size_bytes").expect("expected size_bytes").as_u64().unwrap();
+    assert!(size_bytes > 0, "size_bytes should be positive, got {size_bytes}");
 }
 
 #[test]
@@ -227,6 +235,10 @@ fn search_small_file_returns_done() {
     assert!(json.get("done").unwrap().as_bool().unwrap());
     let anchor = json.get("anchor").unwrap().as_str().unwrap();
     assert_eq!(anchor, "small content");
+
+    // size_bytes should match the file size
+    let size_bytes = json.get("size_bytes").expect("expected size_bytes").as_u64().unwrap();
+    assert_eq!(size_bytes, 13, "expected size_bytes=13 for 'small content', got {size_bytes}");
 }
 
 #[test]

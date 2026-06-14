@@ -5,6 +5,7 @@ use std::fs;
 #[derive(Serialize)]
 struct SearchOutput {
     range: [f64; 2],
+    size_bytes: usize,
     segments: Vec<Segment>,
 }
 
@@ -21,6 +22,7 @@ struct Segment {
 #[derive(Serialize)]
 struct DoneOutput {
     done: bool,
+    size_bytes: usize,
     anchor: String,
 }
 
@@ -71,6 +73,7 @@ pub fn run(
         let anchor = extract_utf8_safe(&data, start, end);
         let output = DoneOutput {
             done: true,
+            size_bytes: range_size,
             anchor,
         };
         println!("{}", serde_json::to_string(&output).unwrap());
@@ -134,6 +137,7 @@ pub fn run(
 
     let output = SearchOutput {
         range: [range_start, range_end],
+        size_bytes: range_size,
         segments,
     };
 

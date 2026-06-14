@@ -34,13 +34,29 @@ Source File
 cargo build --release
 ```
 
-The binary is `target/release/ae`.
+The binaries are `target/release/anchoredit` and `target/release/ae`.
 
 ### Environment
 
 ```bash
 # Optional: specify path to anchorscope binary
 export ANCHORSCOPE_BIN=/path/to/anchorscope
+```
+
+### Usage
+
+Both commands are equivalent:
+
+```bash
+anchoredit search --file <path>
+ae search --file <path>
+```
+
+If `ae` conflicts with another tool in your environment:
+
+```bash
+alias ae=anchoredit
+# or use anchoredit directly
 ```
 
 ## Commands

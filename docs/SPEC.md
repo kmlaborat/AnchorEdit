@@ -97,7 +97,7 @@ anchored scope do not affect `scope_hash`.
 The agent submits an anchor to AnchorScope `read`:
 
 ```bash
-as read --file <path> --anchor "<anchor>"
+anchorscope read --file <path> --anchor "<anchor>"
 ```
 
 AnchorScope returns:
@@ -119,7 +119,7 @@ This step is entirely the agent's responsibility.
 The agent submits the replacement to AnchorScope `write`:
 
 ```bash
-as write \
+anchorscope write \
   --file <path> \
   --anchor "<anchor>" \
   --expected-hash <scope_hash> \

@@ -1,43 +1,38 @@
 # AnchorEdit
 
-**AnchorEdit** is a specification for LLM-native code editing built on top of AnchorScope.
+AnchorEdit is a specification for LLM-native code editing
+built on top of AnchorScope v2.0.0.
 
-It defines how AI agents reason, navigate, and perform deterministic edits using anchor buffers.
+It defines how an LLM agent selects an anchor, submits it
+to AnchorScope, and handles the result.
 
-## Specification
+## Core Idea
 
-The official specification is available in [SPEC.md](./SPEC.md).
+anchor = scope
 
-## Key Features
+Protection breadth equals anchor length.
+The agent decides what to protect by choosing the anchor.
 
-- Buffer-First Editing
-- Tree-Navigation Editing
-- Deterministic Verification via AnchorScope
-- Externalized Working Memory
-- Tool–Skill Separation
+## Repository Structure
+
+- `SPEC.md` — The official specification (v0.2.0)
+- `SLIDING_BISECTION.md` — Anchor discovery algorithm (informative)
 
 ## Architecture
 
 ```
-
-LLM → AnchorEdit → AnchorScope → Source Code
-
+LLM Agent
+  ↓ choose anchor
+AnchorEdit
+  ↓ read / write
+AnchorScope v2.0.0
+  ↓
+Source File
 ```
-
-## Reference Implementation
-
-- **pi-anchoredit** (coming soon)
-
-## Repository Structure
-
-- `SPEC.md` — The official specification
-- `examples/` — to be appear
-- `docs/` — to be appear
-- `diagrams/` — to be appear
 
 ## Status
 
-Draft specification. Contributions are welcome.
+Draft specification. v0.2.0.
 
 ## License
 

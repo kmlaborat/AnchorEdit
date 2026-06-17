@@ -1,17 +1,19 @@
 [package]
 name = "anchoredit"
-version = "0.2.0"
+version = "2.0.0"
 edition = "2021"
 
-[dependencies]
-clap = { version = "4", features = ["derive"] }
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
+[lib]
+name = "anchoredit"
+path = "src/lib.rs"
 
 [[bin]]
 name = "anchoredit"
 path = "src/main.rs"
 
+[dependencies]
+anchorscope = { path = "../AnchorScope" }
+clap = { version = "4", features = ["derive"] }
+
 [dev-dependencies]
 tempfile = "3"
-serde_json = "1"

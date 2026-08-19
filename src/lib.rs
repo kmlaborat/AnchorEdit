@@ -13,4 +13,4 @@
 pub mod apply;
 pub mod error;
 
-pub use apply::{apply, ApplyResult, ApplyError};
+pub use apply::{apply, ApplyError, ApplyResult};

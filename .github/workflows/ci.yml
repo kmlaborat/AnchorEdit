@@ -1,0 +1,112 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # anchoredit depends on anchorscope via a relative path
+          fetch-depth: 0
+          submodules: false
+
+      - name: Fetch AnchorScope dependency
+        run: |
+          git clone --depth 1 https://github.com/kmlaborat/AnchorScope.git ../AnchorScope
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Run tests
+        run: cargo test --locked
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch AnchorScope dependency
+        run: |
+          git clone --depth 1 https://github.com/kmlaborat/AnchorScope.git ../AnchorScope
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: cargo fmt --check
+        run: cargo fmt --all --check
+
+      - name: cargo clippy
+        run: cargo clippy --all-targets --locked -- -D warnings
+
+  build:
+    name: Release build (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+          - target: aarch64-apple-darwin
+            os: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch AnchorScope dependency
+        run: |
+          git clone --depth 1 https://github.com/kmlaborat/AnchorScope.git ../AnchorScope
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      # Install musl toolchain for cross-compilation
+      - name: Install musl tools
+        if: matrix.target == 'x86_64-unknown-linux-musl'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y musl-tools
+
+      - name: Build (release)
+        run: cargo build --release --target ${{ matrix.target }} --locked
+
+      - name: Smoke test binary
+        shell: bash
+        env:
+          MATRIX_TARGET: ${{ matrix.target }}
+          RUNNER_OS: ${{ runner.os }}
+        run: |
+          set -euo pipefail
+          ext=""
+          if [ "$RUNNER_OS" = "Windows" ]; then ext=".exe"; fi
+          bin="target/${MATRIX_TARGET}/release/anchoredit${ext}"
+          "$bin" --version
+          printf 'AAA\nBBB\nCCC\n' > smoke.txt
+          "$bin" apply --file smoke.txt --anchor BBB --replacement XX
+          cat smoke.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: anchoredit-${{ matrix.target }}
+          path: |
+            target/${{ matrix.target }}/release/anchoredit
+            target/${{ matrix.target }}/release/anchoredit.exe
+          if-no-files-found: error

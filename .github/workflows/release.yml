@@ -1,0 +1,111 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            archive: zip
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+            archive: tar.gz
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            archive: tar.gz
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch AnchorScope dependency
+        run: |
+          git clone --depth 1 https://github.com/kmlaborat/AnchorScope.git ../AnchorScope
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      # Install musl toolchain for cross-compilation
+      - name: Install musl tools
+        if: matrix.target == 'x86_64-unknown-linux-musl'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y musl-tools
+
+      - name: Build (release)
+        run: cargo build --release --target ${{ matrix.target }} --locked
+
+      - name: Package artifact
+        shell: bash
+        env:
+          MATRIX_TARGET: ${{ matrix.target }}
+          RUNNER_OS: ${{ runner.os }}
+          MATRIX_ARCHIVE: ${{ matrix.archive }}
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          name="anchoredit-${version}-${MATRIX_TARGET}"
+          ext=""
+          if [ "$RUNNER_OS" = "Windows" ]; then ext=".exe"; fi
+          bin="target/${MATRIX_TARGET}/release/anchoredit${ext}"
+          # Smoke test before packaging
+          "$bin" --version
+          printf 'AAA\nBBB\nCCC\n' > smoke.txt
+          "$bin" apply --file smoke.txt --anchor BBB --replacement XX
+          # Package as anchoredit-<version>-<target>.zip|tar.gz
+          mkdir -p dist
+          cp "$bin" "dist/${name}${ext}"
+          cd dist
+          if [ "$MATRIX_ARCHIVE" = "zip" ]; then
+            7z a -tzip "${name}.zip" "${name}.exe" > /dev/null
+          else
+            tar czf "${name}.tar.gz" "${name}"
+          fi
+          ls -la
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: anchoredit-${{ matrix.target }}
+          path: dist/anchoredit-*.${{ matrix.archive }}
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare release assets
+        run: |
+          mkdir -p release_assets
+          find artifacts -type f \( -name "*.tar.gz" -o -name "*.zip" \) -exec cp {} release_assets/ \;
+          ls -la release_assets
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release_assets/*
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

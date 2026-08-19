@@ -10,7 +10,10 @@ fn create_temp_file(dir: &std::path::Path, name: &str, content: &str) -> std::pa
 }
 
 fn run_anchoredit(args: &[&str]) -> std::process::Output {
-    Command::new(BIN).args(args).output().expect("failed to execute anchoredit")
+    Command::new(BIN)
+        .args(args)
+        .output()
+        .expect("failed to execute anchoredit")
 }
 
 // Library-level tests
@@ -40,11 +43,7 @@ fn apply_no_match() {
     let dir = tempfile::tempdir().expect("failed to create temp dir");
     let file_path = create_temp_file(dir.path(), "test.txt", "hello world");
 
-    let result = anchoredit::apply(
-        file_path.to_str().unwrap(),
-        b"not found",
-        b"replacement",
-    );
+    let result = anchoredit::apply(file_path.to_str().unwrap(), b"not found", b"replacement");
 
     assert!(result.is_err());
     match result.unwrap_err() {
@@ -58,11 +57,7 @@ fn apply_multiple_matches() {
     let dir = tempfile::tempdir().expect("failed to create temp dir");
     let file_path = create_temp_file(dir.path(), "test.txt", "foo bar foo baz");
 
-    let result = anchoredit::apply(
-        file_path.to_str().unwrap(),
-        b"foo",
-        b"bar",
-    );
+    let result = anchoredit::apply(file_path.to_str().unwrap(), b"foo", b"bar");
 
     assert!(result.is_err());
     match result.unwrap_err() {

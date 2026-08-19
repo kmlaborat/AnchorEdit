@@ -32,6 +32,11 @@ impl From<anchorscope::AnchorScopeError> for ApplyError {
             anchorscope::AnchorScopeError::NoMatch => ApplyError::NoMatch,
             anchorscope::AnchorScopeError::MultipleMatches => ApplyError::MultipleMatches,
             anchorscope::AnchorScopeError::HashMismatch => ApplyError::HashMismatch,
+            // InvalidHashFormat cannot occur: apply computes the hash itself
+            // and never accepts an externally supplied one.
+            anchorscope::AnchorScopeError::InvalidHashFormat => {
+                unreachable!("apply does not accept external hashes")
+            }
             anchorscope::AnchorScopeError::IoError(msg) => ApplyError::IoError(msg),
         }
     }

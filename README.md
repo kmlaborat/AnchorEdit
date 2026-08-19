@@ -10,7 +10,21 @@ Anchor → Apply → Verified Write
 
 ## Installation
 
+### Prebuilt Binaries
+
+Download from the [Releases page](https://github.com/kmlaborat/AnchorEdit/releases):
+
+| Asset | Platform |
+| ----- | -------- |
+| `anchoredit-<ver>-x86_64-pc-windows-msvc.zip` | Windows x86_64 |
+| `anchoredit-<ver>-x86_64-unknown-linux-musl.tar.gz` | Linux x86_64 (static, musl) |
+| `anchoredit-<ver>-aarch64-apple-darwin.tar.gz` | macOS Apple Silicon |
+
+### Build from Source
+
+```bash
 cargo install --path .
+```
 
 ## Prerequisites
 
